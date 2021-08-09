@@ -9,7 +9,7 @@ class Loteria extends Model
 {
     public function getJson(){
         //Verifica se o ultimo resultado foi gerado 12 horas antes de fazer uma nova solicitação
-        if(!$this->resultExpired()){
+        if($this->resultIsValid()){
             return $this->json;
         }
 
@@ -17,7 +17,7 @@ class Loteria extends Model
         $json = Util::getJsonFromLink($this->link);
         
         //Se o json não for válido gera um novo link
-        if(Util::jsonIsValid($json)){
+        if(!Util::jsonIsValid($json)){
             $link = Util::generateLink($this->nome);
             $json = Util::getJsonFromLink($link);
             $this->link = $link;
@@ -30,6 +30,13 @@ class Loteria extends Model
 
     public function resultExpired(){
         if(strtotime($this->updated_at) < strtotime('-12 hours')){
+            return true;
+        }
+        return false;
+    }
+
+    public function resultIsValid(){
+        if(Util::jsonIsValid($this->json) && !$this->resultExpired()){
             return true;
         }
         return false;

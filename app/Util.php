@@ -24,6 +24,9 @@ class Util
     }
 
     public static function getJsonFromLink($url){
+        if($url == null){
+            return null;
+        }
         $json = Http::get($url);
         return $json;
     }
